@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoTaller Altiplano - Sistema de Órdenes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">🔧 AutoTaller Altiplano</div>
+
+    <nav id="menu" class="menu">
+      <a href="#" data-tab="nueva">Nueva Orden</a>
+      <a href="#" data-tab="ordenes">Órdenes</a>
+      <a href="#" data-tab="bitacora">Bitácora</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <div class="controles">
+      <span class="reloj" id="reloj">--:--:--</span>
+      <button id="btnTema" title="Cambiar tema">🌙</button>
+      <button id="hamburguesa" title="Menú">☰</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Sistema de Control de Órdenes</h1>
+    <p>Registra vehículos, sigue su reparación y consulta cada evento con su fecha y hora</p>
+  </section>
+
+  <main class="contenedor">
+
+    <!-- ESTADÍSTICAS -->
+    <section class="stats">
+      <div class="stat"><span id="stTotal">0</span><small>Total</small></div>
+      <div class="stat s-recibido"><span id="stRecibido">0</span><small>Recibidos</small></div>
+      <div class="stat s-reparacion"><span id="stReparacion">0</span><small>En reparación</small></div>
+      <div class="stat s-listo"><span id="stListo">0</span><small>Listos</small></div>
+      <div class="stat s-entregado"><span id="stEntregado">0</span><small>Entregados</small></div>
+    </section>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs">
+      <button class="tab active" data-tab="nueva">📝 Nueva Orden</button>
+      <button class="tab" data-tab="ordenes">🚗 Órdenes</button>
+      <button class="tab" data-tab="bitacora">📋 Bitácora de Eventos</button>
+    </div>
+
+    <!-- PESTAÑA 1: FORMULARIO -->
+    <section id="tab-nueva" class="panel active">
+      <form id="formOrden" novalidate>
+        <h2>Registrar ingreso de vehículo</h2>
+        <div class="fila">
+          <div class="campo">
+            <label for="cliente">Nombre del cliente *</label>
+            <input type="text" id="cliente" placeholder="Ej: Juan Pérez">
+            <span class="error"></span>
+          </div>
+          <div class="campo">
+            <label for="celular">Celular *</label>
+            <input type="text" id="celular" placeholder="Ej: 71234567" maxlength="8">
+            <span class="error"></span>
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="placa">Placa *</label>
+            <input type="text" id="placa" placeholder="Ej: 1234ABC" maxlength="7">
+            <span class="error"></span>
+          </div>
+          <div class="campo">
+            <label for="vehiculo">Marca y modelo *</label>
+            <input type="text" id="vehiculo" placeholder="Ej: Toyota Corolla 2015">
+            <span class="error"></span>
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="servicio">Servicio *</label>
+            <select id="servicio">
+              <option value="">-- Selecciona --</option>
+            </select>
+            <span class="error"></span>
+          </div>
+          <div class="campo">
+            <label for="costo">Costo estimado</label>
+            <input type="text" id="costo" value="Bs 0" readonly>
+            <span class="error"></span>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción del problema * <small id="contador">0/200</small></label>
+          <textarea id="descripcion" rows="3" maxlength="200" placeholder="Describe qué falla tiene el vehículo..."></textarea>
+          <span class="error"></span>
+        </div>
+
+        <button type="submit" class="btn-principal">Registrar Orden</button>
+      </form>
+    </section>
+
+    <!-- PESTAÑA 2: ÓRDENES -->
+    <section id="tab-ordenes" class="panel">
+      <div class="herramientas">
+        <input type="text" id="buscar" placeholder="🔍 Buscar por placa, cliente o vehículo...">
+        <select id="filtroEstado">
+          <option value="todos">Todos los estados</option>
+          <option value="Recibido">Recibido</option>
+          <option value="En reparación">En reparación</option>
+          <option value="Listo">Listo</option>
+          <option value="Entregado">Entregado</option>
+        </select>
+      </div>
+      <div id="listaOrdenes" class="grid"></div>
+      <div id="vacio" class="vacio">
+        <p>🛠️ Aún no hay órdenes registradas.</p>
+        <button id="btnEjemplos" class="btn-sec">Cargar datos de ejemplo</button>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: BITÁCORA -->
+    <section id="tab-bitacora" class="panel">
+      <div class="herramientas">
+        <select id="filtroTipo">
+          <option value="todos">Todos los eventos</option>
+          <option value="SISTEMA">Sistema</option>
+          <option value="NAVEGACION">Navegación</option>
+          <option value="FORMULARIO">Formulario</option>
+          <option value="ORDEN">Órdenes</option>
+          <option value="TEMA">Tema</option>
+          <option value="ERROR">Errores</option>
+          <option value="SOCIAL">Redes</option>
+        </select>
+        <button id="btnLimpiar" class="btn-peligro">🗑 Limpiar bitácora</button>
+      </div>
+      <p class="info">Eventos registrados: <strong id="cantEventos">0</strong></p>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr><th>Fecha y hora (timestamp)</th><th>Tipo</th><th>Evento</th></tr>
+          </thead>
+          <tbody id="tbodyBitacora"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="contacto" class="footer">
+    <div class="footer-grid">
+      <div>
+        <h4>🔧 AutoTaller Altiplano</h4>
+        <p>Mecánica general, frenos, suspensión y diagnóstico.</p>
+        <p>📍 Av. Buenos Aires #456, La Paz, Bolivia</p>
+        <p>📞 Tel: 75341964</p>
+      </div>
+      <div>
+        <h4>Horarios</h4>
+        <p>Lunes a Viernes: 8:00 - 18:00</p>
+        <p>Sábados: 8:00 - 13:00</p>
+        <p>Domingos: cerrado</p>
+      </div>
+      <div>
+        <h4>Síguenos</h4>
+        <p><a href="https://www.instagram.com/jfjahdkasfkj?xtok=MWFzejZ3anJpMXdxeQ==" target="_blank" class="social">📸 Instagram</a></p>
+        <p><a href="https://www.facebook.com/share/1A5YcfnNdr/" target="_blank" class="social">👍 Facebook</a></p>
+        <p><a href="https://www.tiktok.com/@gaticoo7w7" target="_blank" class="social">🎵 TikTok</a></p>
+      </div>
+    </div>
+    <p class="copy">© 2026 Denilson Carvajal - Todos los derechos reservados</p>
+  </footer>
+
+  <div id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
